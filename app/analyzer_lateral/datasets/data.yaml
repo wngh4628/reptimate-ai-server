@@ -1,0 +1,21 @@
+#train: /yolo8/datasets/train/images
+#val: /yolo8/datasets/valid/images
+#test: /yolo8/datasets/test/images
+#
+#nc: 1
+#names: ['trash']
+#
+#roboflow:
+#  workspace: mohamed-traore-2ekkp
+#  project: taco-trash-annotations-in-context
+#  version: 16
+#  license: CC BY 4.0
+#  url: https://universe.roboflow.com/mohamed-traore-2ekkp/taco-trash-annotations-in-context/dataset/16
+#
+#
+
+  names: [ 'analyzer_lateral' ]
+  nc: 1
+  test: ./test/images/
+  train: ./train/images/
+  val: ./valid/images/
