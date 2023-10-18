@@ -39,11 +39,11 @@ class TopMode:
                     dorsal_exist = 1
                 else:
                     tail_exist = 1
-
                 # 화면 비율 맞춰주는 부분
                 for point in li[num]:  # , (x, y)
                     point[0] = round(point[0] * boxes.orig_shape[1])
                     point[1] = round(point[1] * boxes.orig_shape[0])
+
 
                 # 원본 이미지 복사
                 origin_image = image.copy()
@@ -104,7 +104,6 @@ class TopMode:
             top_result["dorsal_second_percent"] = second_percent
             top_result["dorsal_score"] = dorsal_score
 
-
             #머리 - (세로/가로)X100, 예외처리
             # 이미지 열기
             head_img = Image.open(base_dir + "/app/analyzer_lateral/datasets/test/images/" + date + "cropped_image_head.png")
@@ -126,7 +125,6 @@ class TopMode:
             top_result["head_percent"] = head_percent
             top_result["haed_score"] = haed_score
 
-
             #꼬리 - 유무
             tail_score = 0
             if tail_exist == 1:
@@ -135,11 +133,14 @@ class TopMode:
                 tail_score = 50
 
             top_result["tail_score"] = tail_score
-            os.remove(base_dir + "/app/analyzer_lateral/datasets/test/images/" + date + "topImgPath.jpeg")
+
+            # print("dorsal_score, ", dorsal_score)
+            # print("haed_score, ", haed_score)
+            # print("tail_score, ", tail_score)
+            os.remove(image_path)
             os.remove(base_dir + "/app/analyzer_lateral/datasets/test/images/" + date + "cropped_image_dorsal.png")
             os.remove(base_dir + "/app/analyzer_lateral/datasets/test/images/" + date + "cropped_image_head.png")
             os.remove(base_dir + "/app/analyzer_lateral/datasets/test/images/" + date + "cropped_image_tail.png")
-
             return top_result
        #다시 찍으셈
         else:

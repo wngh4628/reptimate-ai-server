@@ -13,12 +13,15 @@ class Config:
     DB_ECHO: bool = True
     DEBUG: bool = False
     TEST_MODE: bool = False
-    USER = dotenv_values('.env').get("USER")
-    PWD = dotenv_values('.env').get("PWD")
-    HOST = dotenv_values('.env').get("HOST")
-    PORT = dotenv_values('.env').get("PORT")
-    DATABASE_NAME = dotenv_values('.env').get("DATABASE_NAME")
+    print('base_dir: ', base_dir)
+    USER = dotenv_values(base_dir + '/app/.env').get("USER")
+    PWD = dotenv_values(base_dir + '/app/.env').get("PWD")
+    HOST = dotenv_values(base_dir + '/app/.env').get("HOST")
+    PORT = dotenv_values(base_dir + '/app/.env').get("PORT")
+    DATABASE_NAME = dotenv_values(base_dir + '/app/.env').get("DATABASE_NAME")
     DB_URL: str = f'mysql+pymysql://{USER}:{PWD}@{HOST}:{PORT}/{DATABASE_NAME}?charset=utf8mb4'
+
+    print('DB_URL: ', DB_URL)
 
 @dataclass
 class LocalConfig(Config):

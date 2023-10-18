@@ -7,6 +7,8 @@ import datetime
 import pytz
 import uuid
 import asyncio
+from os import path, environ
+base_dir = path.dirname(path.dirname(path.dirname(path.abspath(__file__))))
 
 class S3Uploader:
     def __init__(self, bucket_name, region, access_key, secret_key):
@@ -48,8 +50,8 @@ class S3Uploader:
 
 # S3Uploader 클래스 인스턴스 생성
 s3_uploader = S3Uploader(
-    bucket_name=dotenv_values('../.env').get("AWS_BUCKET_NAME"),
-    region=dotenv_values('../.env').get("AWS_BUCKET_REGION"),
-    access_key=dotenv_values('../.env').get("AWS_ACECSS_KEY_ID"),
-    secret_key=dotenv_values('../.env').get("AWS_SECRET_ACCESS_KEY"),
+    bucket_name=dotenv_values(base_dir + '/app/.env').get("AWS_BUCKET_NAME"),
+    region=dotenv_values(base_dir + '/app/.env').get("AWS_BUCKET_REGION"),
+    access_key=dotenv_values(base_dir + '/app/.env').get("AWS_ACECSS_KEY_ID"),
+    secret_key=dotenv_values(base_dir + '/app/.env').get("AWS_SECRET_ACCESS_KEY"),
 )

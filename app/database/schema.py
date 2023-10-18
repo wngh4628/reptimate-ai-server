@@ -183,11 +183,11 @@ class ApiKeys(Base, BaseMixin):
     secret_key = Column(String(length=64), nullable=False)
 
 class ValueAnalyzerSchema(Base, BaseMixin):
-    __tablename__ = "ValueAnalyzer"
+    __tablename__ = "value_analyzer"
     user_idx = Column(Integer, nullable=False)
     pet_name = Column(String(length=100), nullable=False)
     moff = Column(String(length=100), nullable=False)
-    Gender = Column(String(length=100), nullable=False)
+    gender = Column(String(length=100), nullable=False)
     head_score = Column(Integer, nullable=False)
     dorsal_score = Column(Integer, nullable=False)
     tail_score = Column(Integer, nullable=False)

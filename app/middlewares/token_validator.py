@@ -25,7 +25,8 @@ from utils.date_utils import D
 from utils.logger import api_logger
 from utils.query_utils import to_dict
 from datetime import datetime
-
+from os import path, environ
+base_dir = path.dirname(path.dirname(path.dirname(path.abspath(__file__))))
 
 async def access_control(request: Request, call_next):
     request.state.req_time = D.datetime()
@@ -33,12 +34,10 @@ async def access_control(request: Request, call_next):
     request.state.inspect = None
     request.state.user = None
     request.state.service = None
-
     ip = request.headers["x-forwarded-for"] if "x-forwarded-for" in request.headers.keys() else request.client.host
     request.state.ip = ip.split(",")[0] if "," in ip else ip
     headers = request.headers
     cookies = request.cookies
-
     url = request.url.path
     if await url_pattern_check(url, EXCEPT_PATH_REGEX) or url in EXCEPT_PATH_LIST:
         response = await call_next(request)
@@ -58,7 +57,6 @@ async def access_control(request: Request, call_next):
                         qs_dict = {qs_split.split("=")[0]: qs_split.split("=")[1] for qs_split in qs_list}
                     except Exception:
                         raise ex.APIQueryStringEx()
-
                     qs_keys = qs_dict.keys()
 
                     if "key" not in qs_keys or "timestamp" not in qs_keys:
@@ -87,6 +85,9 @@ async def access_control(request: Request, call_next):
 
                 else:
                     # Request User 가 필요함
+                    print('headers: ', headers)
+                    print('headers keys: ', headers.keys())
+                    print('headers Authorization: ', headers.get("Authorization"))
                     if "authorization" in headers.keys():
                         key = headers.get("Authorization")
                         if key and key.startswith("Bearer "):
@@ -95,8 +96,7 @@ async def access_control(request: Request, call_next):
                         else:
                             # "Bearer "가 없으면 그대로 사용
                             key = key
-                        payload = jwt.decode(key, dotenv_values('.env').get("JWT_SECRET"), algorithms=["HS256"])
-
+                        payload = jwt.decode(key, dotenv_values(base_dir + '/app/.env').get("JWT_SECRET"), algorithms=["HS256"])
                         # 토큰의 유효 기간이 만료된 경우
                         current_time = datetime.utcnow().timestamp()
                         if current_time >= payload.get("exp"):
@@ -104,7 +104,6 @@ async def access_control(request: Request, call_next):
                         request.state.user = payload.get("userIdx")
                         # 토큰 없음
                     else:
-                        print('key', headers)
                         if "Authorization" not in headers.keys():
                             raise ex.NotAuthorized()
                 session.close()
