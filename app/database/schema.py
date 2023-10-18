@@ -181,21 +181,3 @@ class ApiKeys(Base, BaseMixin):
     __tablename__ = "api_keys"
     access_key = Column(String(length=64), nullable=False, index=True)
     secret_key = Column(String(length=64), nullable=False)
-
-class ValueAnalyzerSchema(Base, BaseMixin):
-    __tablename__ = "value_analyzer"
-    user_idx = Column(Integer, nullable=False)
-    pet_name = Column(String(length=100), nullable=False)
-    moff = Column(String(length=100), nullable=False)
-    gender = Column(String(length=100), nullable=False)
-    head_score = Column(Integer, nullable=False)
-    dorsal_score = Column(Integer, nullable=False)
-    tail_score = Column(Integer, nullable=False)
-    left_score = Column(Integer, nullable=False)
-    right_score = Column(Integer, nullable=False)
-    left_info = Column(String(length=1000), nullable=True)
-    right_info = Column(String(length=1000), nullable=True)
-    total_score = Column(Integer, nullable=True)
-    top_img = Column(String(length=255), nullable=False)
-    left_img = Column(String(length=255), nullable=False)
-    right_img = Column(String(length=255), nullable=False)

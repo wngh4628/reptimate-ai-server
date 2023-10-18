@@ -10,7 +10,7 @@ from middlewares.FileUploadMiddleware import FileUploadMiddleware
 from common.config import conf
 from database.conn import db
 from routes import index
-from routes.ValueAnalyzer import services
+from routes.ValueAnalyzer import controller
 
 from middlewares.token_validator import access_control
 from middlewares.trusted_hosts import TrustedHostMiddleware
@@ -47,9 +47,9 @@ def create_app():
     app.include_router(index.router)
 
     if conf().DEBUG:
-        app.include_router(services.router, tags=["Services"], prefix="/api", dependencies=[Depends(API_KEY_HEADER)])
+        app.include_router(controller.router, tags=["AI"], dependencies=[Depends(API_KEY_HEADER)])
     else:
-        app.include_router(services.router, tags=["Services"], prefix="/api")
+        app.include_router(controller.router, tags=["AI"])
 
     return app
 

@@ -1,8 +1,8 @@
 from pydantic import BaseModel
 import json
-
+from typing import Optional
 class ValueAnalyzerCreate(BaseModel):
-    user_idx: int = 65
+    user_idx: Optional[int] = None
     pet_name: str = '릴리'
     moff: str = '릴리 화이트'
     gender: str = '암컷'
@@ -53,6 +53,5 @@ class ValueAnalyzerCreate(BaseModel):
         return value_analyzer_create
 
 class ValueAnalyze(BaseModel):
-    pet_name: str = '릴리'
-    pet_moff: str = '릴리 화이트'
+    moff: str = '릴리 화이트'
     gender: str = '암컷'

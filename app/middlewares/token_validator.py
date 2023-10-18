@@ -46,90 +46,70 @@ async def access_control(request: Request, call_next):
         return response
 
     try:
-        if url.startswith("/api"):
-            # api 인경우 헤더로 토큰 검사
-            if url.startswith("/api/services"):
-                qs = str(request.query_params)
-                qs_list = qs.split("&")
-                session = next(db.session())
-                if not config.conf().DEBUG:
-                    try:
-                        qs_dict = {qs_split.split("=")[0]: qs_split.split("=")[1] for qs_split in qs_list}
-                    except Exception:
-                        raise ex.APIQueryStringEx()
-                    qs_keys = qs_dict.keys()
+        if url.startswith("/ai"):
+            qs = str(request.query_params)
+            qs_list = qs.split("&")
+            session = next(db.session())
+            if not config.conf().DEBUG:
+                try:
+                    qs_dict = {qs_split.split("=")[0]: qs_split.split("=")[1] for qs_split in qs_list}
+                except Exception:
+                    raise ex.APIQueryStringEx()
+                qs_keys = qs_dict.keys()
 
-                    if "key" not in qs_keys or "timestamp" not in qs_keys:
-                        raise ex.APIQueryStringEx()
+                if "key" not in qs_keys or "timestamp" not in qs_keys:
+                    raise ex.APIQueryStringEx()
 
-                    if "secret" not in headers.keys():
-                        raise ex.APIHeaderInvalidEx()
+                if "secret" not in headers.keys():
+                    raise ex.APIHeaderInvalidEx()
 
-                    api_key = ApiKeys.get(session=session, access_key=qs_dict["key"])
+                api_key = ApiKeys.get(session=session, access_key=qs_dict["key"])
 
-                    if not api_key:
-                        raise ex.NotFoundAccessKeyEx(api_key=qs_dict["key"])
-                    mac = hmac.new(bytes(api_key.secret_key, encoding='utf8'), bytes(qs, encoding='utf-8'), digestmod='sha256')
-                    d = mac.digest()
-                    validating_secret = str(base64.b64encode(d).decode('utf-8'))
+                if not api_key:
+                    raise ex.NotFoundAccessKeyEx(api_key=qs_dict["key"])
+                mac = hmac.new(bytes(api_key.secret_key, encoding='utf8'), bytes(qs, encoding='utf-8'), digestmod='sha256')
+                d = mac.digest()
+                validating_secret = str(base64.b64encode(d).decode('utf-8'))
 
-                    if headers["secret"] != validating_secret:
-                        raise ex.APIHeaderInvalidEx()
+                if headers["secret"] != validating_secret:
+                    raise ex.APIHeaderInvalidEx()
 
-                    now_timestamp = int(D.datetime(diff=9).timestamp())
-                    if now_timestamp - 10 > int(qs_dict["timestamp"]) or now_timestamp < int(qs_dict["timestamp"]):
-                        raise ex.APITimestampEx()
+                now_timestamp = int(D.datetime(diff=9).timestamp())
+                if now_timestamp - 10 > int(qs_dict["timestamp"]) or now_timestamp < int(qs_dict["timestamp"]):
+                    raise ex.APITimestampEx()
 
-                    user_info = to_dict(api_key.users)
-                    request.state.user = UserToken(**user_info)
+                user_info = to_dict(api_key.users)
+                request.state.user = UserToken(**user_info)
 
-                else:
-                    # Request User 가 필요함
-                    print('headers: ', headers)
-                    print('headers keys: ', headers.keys())
-                    print('headers Authorization: ', headers.get("Authorization"))
-                    if "authorization" in headers.keys():
-                        key = headers.get("Authorization")
-                        if key and key.startswith("Bearer "):
-                            # "Bearer " 부분을 제거하고 실제 토큰 값만 추출
-                            key = key.split("Bearer ")[1]
-                        else:
-                            # "Bearer "가 없으면 그대로 사용
-                            key = key
-                        payload = jwt.decode(key, dotenv_values(base_dir + '/app/.env').get("JWT_SECRET"), algorithms=["HS256"])
-                        # 토큰의 유효 기간이 만료된 경우
-                        current_time = datetime.utcnow().timestamp()
-                        if current_time >= payload.get("exp"):
-                            raise ex.TokenExpiredEx()
-                        request.state.user = payload.get("userIdx")
-                        # 토큰 없음
-                    else:
-                        if "Authorization" not in headers.keys():
-                            raise ex.NotAuthorized()
-                session.close()
-                response = await call_next(request)
-                return response
             else:
                 if "authorization" in headers.keys():
-                    token_info = await token_decode(access_token=headers.get("Authorization"))
-                    request.state.user = UserToken(**token_info)
-                    # 토큰 없음
+                    key = headers.get("Authorization")
+                    if key and key.startswith("Bearer "):
+                        key = key.split("Bearer ")[1]
+                    else:
+                        key = key
+                    payload = jwt.decode(key, dotenv_values(base_dir + '/app/.env').get("JWT_SECRET"), algorithms=["HS256"])
+                    current_time = datetime.utcnow().timestamp()
+                    if current_time >= payload.get("exp"):
+                        raise ex.TokenExpiredEx()
+                    request.state.user = payload.get("userIdx")
                 else:
                     if "Authorization" not in headers.keys():
                         raise ex.NotAuthorized()
+            session.close()
+            response = await call_next(request)
+            return response
         else:
-            # 템플릿 렌더링인 경우 쿠키에서 토큰 검사
-            cookies["Authorization"] = "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MTQsImVtYWlsIjoia29hbGFAZGluZ3JyLmNvbSIsIm5hbWUiOm51bGwsInBob25lX251bWJlciI6bnVsbCwicHJvZmlsZV9pbWciOm51bGwsInNuc190eXBlIjpudWxsfQ.4vgrFvxgH8odoXMvV70BBqyqXOFa2NDQtzYkGywhV48"
+            if "authorization" in headers.keys():
+                token_info = await token_decode(access_token=headers.get("Authorization"))
+                request.state.user = UserToken(**token_info)
+            else:
+                if "Authorization" not in headers.keys():
+                    raise ex.NotAuthorized()
 
-            if "Authorization" not in cookies.keys():
-                raise ex.NotAuthorized()
-
-            token_info = await token_decode(access_token=cookies.get("Authorization"))
-            request.state.user = UserToken(**token_info)
         response = await call_next(request)
         await api_logger(request=request, response=response)
     except Exception as e:
-
         error = await exception_handler(e)
         error_dict = dict(status=error.status_code, msg=error.msg, detail=error.detail, code=error.code)
         response = JSONResponse(status_code=error.status_code, content=error_dict)
