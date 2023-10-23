@@ -1,24 +1,25 @@
 from typing import List
 from fastapi import UploadFile, File, Depends
 from sqlalchemy.orm import Session
-from analyzer_lateral.lateral import Lateral
-from analyzer_top.topmode_test import TopMode
-from analyzer_gender.gender import Gender
+from core.analyzer_lateral.lateral import Lateral
+from core.analyzer_top.topmode_test import TopMode
+from core.analyzer_gender.gender import Gender
 from utils.S3 import s3_uploader
 from routes.ValueAnalyzer.schemas.ValueAnalyer_schema import ValueAnalyzerSchema
 from routes.ValueAnalyzer.dtos.ValueAnalyzer_dto import ValueAnalyzerCreate, ValueAnalyze
 from os import path
 import os
 import datetime
-from database.conn import db
+from core.database.conn import db
 from fastapi import HTTPException
+import shutil
 
 base_dir = path.dirname(path.dirname(path.dirname(path.abspath(__file__))))
 class ai_service:
     async def assess_value(self, data: ValueAnalyze, files: List[UploadFile]):
-        topAnalyzer = TopMode(base_dir + '/analyzer_top/datasets/train/weights/best.pt')
-        lateralAnalyzer = Lateral(base_dir + '/analyzer_lateral/datasets/train/weights/best.pt')
-        save_dir = base_dir + '/analyzer_lateral/datasets/test/images'
+        topAnalyzer = TopMode(base_dir + '/core/analyzer_top/datasets/train/weights/best.pt')
+        lateralAnalyzer = Lateral(base_dir + '/core/analyzer_lateral/datasets/train/weights/best.pt')
+        save_dir = base_dir + '/core/analyzer_lateral/datasets/test/images'
         current_time = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
         file_name = ''
         topImgPath = ''
@@ -89,6 +90,7 @@ class ai_service:
                 result.left_img = image_url
             elif idx == 2:
                 result.right_img = image_url
+
         value_analyzer = ValueAnalyzerSchema(**result.dict())  # ValueAnalyzerCreate 모델의 데이터를 ValueAnalyzer 모델로 변환
         session.add(value_analyzer)
         session.commit()
@@ -119,20 +121,36 @@ class ai_service:
             self,
             file: UploadFile):
         # 훈련 데이터 파일 경로를 넣어주며 클래스 생성
-        genderAnalyzer = Gender(base_dir + '/analyzer_gender/datasets/train/weights/best.pt')
+        genderAnalyzer = Gender(base_dir + '/core/analyzer_gender/datasets/train/weights/best.pt')
         # 받은 이미지 저장할 경로 설정
-        save_dir = base_dir + '/analyzer_gender/datasets/test/images'
+        save_dir = base_dir + '/core/analyzer_gender/datasets/test/images'
         # 저장할 이미지 이름에 현제 날짜와 시간을 넣어 주기 위한 날짜 & 시간
         current_time = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
         # 이름 합치기 & 가공
-        file_full_name_ = f"{current_time}_{file.filename.rsplit('.', 1)[0]}"
+        file_full_name = f"{current_time}_{file.filename.rsplit('.', 1)[0]}"
         # 최종 파일 이름
-        file_name = os.path.join(save_dir, f"{file_full_name_}_genderImgPath.jpeg")
+        file_name = os.path.join(save_dir, f"{file_full_name}_genderImgPath.jpeg")
+        # 세그멘테이션 결과 이미지 경로
+        result_path = f"{save_dir}/{file_full_name}/{file_full_name}_genderImgPath.jpeg"
         # 이미지 저장
         with open(file_name, "wb") as f:
             f.write(file.file.read())
         # 본격적으로 성별 구분 기능 실행. 저장된 이미지 경로와 결과물 저장할 이름 만들 떄 필요한 값들 넣어줌
-        genderResult = genderAnalyzer.analyze_image(file_name, current_time + "_gender_")
+        genderResult = genderAnalyzer.analyze_image(file_name, save_dir, file_full_name)
+
+        # # 세그멘테이션 결과 이미지 file로 객체화
+        with open(result_path, "rb") as sagFile:
+            resultFile = sagFile.read()
         # 다쓴 이미지는 삭제, 영구 저장할 이미지는 S3에 저장함
+        returnImg = s3_uploader.upload_local_image(resultFile, 'gender_discrimination', f"{file_full_name}_gender_result.jpeg")
+        # 세그멘테이션 결과물 디렉토리 삭제
+        dir_path = f"{save_dir}/{file_full_name}"
+        try:
+            shutil.rmtree(dir_path)
+        except OSError as e:
+            print(f"Error: {e.strerror}")
+
+        # 원본 이미지 삭제
         os.remove(file_name)
-        return genderResult
+        result = {"result": genderResult, "returnImg": returnImg['message'].split('URL: ')[1]}
+        return result

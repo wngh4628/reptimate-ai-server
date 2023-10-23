@@ -1,11 +1,9 @@
-import datetime
 from typing import List
-from analyzer_gender.gender import Gender
 from fastapi import Depends, UploadFile, APIRouter, File
 from os import path
 from sqlalchemy.orm import Session
 from routes.ValueAnalyzer.dtos.ValueAnalyzer_dto import ValueAnalyzerCreate,ValueAnalyze
-from database.conn import db
+from core.database.conn import db
 from routes.ValueAnalyzer.service import ai_service
 
 
@@ -35,7 +33,7 @@ async def analyzer_save(
         session: Session = Depends(db.session)):
 
     # 로그인이 되어 있는 상태에서 가치 판단 결과 저장
-    result = await ai_service.analyzer_save(idx, userIdx, petName, ai_service, session)  # assess_value 메서드 호출
+    result = await ai_service.analyzer_save(idx, userIdx, petName, session)  # assess_value 메서드 호출
 
     return result
 
@@ -43,7 +41,7 @@ async def analyzer_save(
 async def gender_discrimination(
         file: UploadFile,
         ai_service: ai_service = Depends(ai_service)):
-    genderResult = ai_service.gender_discrimination(file)
+    genderResult = await ai_service.gender_discrimination(file)
     return genderResult
 
 

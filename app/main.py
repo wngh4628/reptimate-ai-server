@@ -1,19 +1,14 @@
 from dataclasses import asdict
-
 import uvicorn
 from fastapi import FastAPI, Depends
 from fastapi.security import APIKeyHeader
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.middleware.cors import CORSMiddleware
-
-from middlewares.FileUploadMiddleware import FileUploadMiddleware
-from common.config import conf
-from database.conn import db
-from routes import index
+from core.common.config import conf
+from core.database.conn import db
 from routes.ValueAnalyzer import controller
-
-from middlewares.token_validator import access_control
-from middlewares.trusted_hosts import TrustedHostMiddleware
+from core.middlewares.token_validator import access_control
+from core.middlewares.trusted_hosts import TrustedHostMiddleware
 
 API_KEY_HEADER = APIKeyHeader(name="Authorization", auto_error=False)
 
@@ -43,8 +38,7 @@ def create_app():
     )
     app.add_middleware(TrustedHostMiddleware, allowed_hosts=conf().TRUSTED_HOSTS, except_path=["/health"])
 
-    # 라우터 정의
-    app.include_router(index.router)
+
 
     if conf().DEBUG:
         app.include_router(controller.router, tags=["AI"], dependencies=[Depends(API_KEY_HEADER)])
@@ -57,4 +51,4 @@ def create_app():
 app = create_app()
 
 if __name__ == "__main__":
-    uvicorn.run("main:app", host="0.0.0.0", port=8080, reload=True)
+    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)

@@ -27,11 +27,30 @@ class S3Uploader:
             file_name = f"{self.moment_file()}-{uuid.uuid4()}-{file.filename}"
             # 폴더 + 파일 이름
             object_key = f"{folder_name}/{file_name}"
+
+            file.file.seek(0)
+            contents = file.file.read()
             # S3에 파일 업로드
-            self.s3.upload_fileobj(file.file, self.bucket_name, object_key)
+            self.s3.put_object(Body=contents, Bucket=self.bucket_name, Key=object_key)
+            # 업로드한 이미지의 URL 생성
+            image_url = f"https://{self.bucket_name}.s3.{self.region}.amazonaws.com/{object_key}"
+
+            return {"message": f"Image uploaded successfully. URL: {image_url}"}
+
+        except NoCredentialsError:
+            return {"message": "AWS credentials not available."}
+        except Exception as e:
+            return {"message": f"An error occurred: {str(e)}"}
+    # 로컬 저장소에 저장된 데이터 업로드
+    def upload_local_image(self, file, folder_name, fileName):
+        try:
+            # 폴더 + 파일 이름
+            object_key = f"{folder_name}/{fileName}"
+            # S3에 파일 업로드
+            self.s3.put_object(Body=file, Bucket=self.bucket_name, Key=object_key)
 
             # 업로드한 이미지의 URL 생성
-            image_url = f"https://{self.bucket_name}.s3-{self.region}.amazonaws.com/{object_key}"
+            image_url = f"https://{self.bucket_name}.s3.{self.region}.amazonaws.com/{object_key}"
 
             return {"message": f"Image uploaded successfully. URL: {image_url}"}
 

@@ -1,5 +1,5 @@
-from database.conn import Base, db
-from database.schema import BaseMixin
+from core.database.conn import Base, db
+from core.database.schema import BaseMixin
 from sqlalchemy import (
     Column,
     Integer,
