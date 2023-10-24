@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 from routes.ValueAnalyzer.dtos.ValueAnalyzer_dto import ValueAnalyzerCreate,ValueAnalyze
 from core.database.conn import db
 from routes.ValueAnalyzer.service import ai_service
-
+from utils.FileChecker import FileChecker
 
 base_dir = path.dirname(path.dirname(path.dirname(path.abspath(__file__))))
 import os
@@ -16,7 +16,8 @@ router = APIRouter(prefix='/ai')
 async def assessValue(data: ValueAnalyze = Depends(), files: List[UploadFile] = File(...),
         ai_service: ai_service = Depends(ai_service),
         session: Session = Depends(db.session)):
-
+    #이미지 유효성 검사
+    await FileChecker.imgCheck(files)
     # 가치 판단 기능 실행
     result = await ai_service.assess_value(data, files)  # assess_value 메서드 호출
     # 결과 데이터 및 이미지 s3 저장
@@ -41,6 +42,8 @@ async def analyzer_save(
 async def gender_discrimination(
         file: UploadFile,
         ai_service: ai_service = Depends(ai_service)):
+    # 이미지 유효성 검사
+    await FileChecker.imgCheck(file)
     genderResult = await ai_service.gender_discrimination(file)
     return genderResult
 

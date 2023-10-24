@@ -106,7 +106,6 @@ class Lateral:
         elif ThirdPercent > 20:
             score = score + 10
 
-        print('Left score: ', score)
         os.remove(cropImgPath)
         os.remove(image_path)
         result = {

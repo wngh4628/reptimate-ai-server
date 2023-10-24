@@ -1,9 +1,10 @@
-from typing import List
+from typing import List,Union
 from fastapi import UploadFile, File, Depends
 from sqlalchemy.orm import Session
 from core.analyzer_lateral.lateral import Lateral
 from core.analyzer_top.topmode_test import TopMode
 from core.analyzer_gender.gender import Gender
+from core.analyzer_img_checker.img_checker import Img_checker
 from utils.S3 import s3_uploader
 from routes.ValueAnalyzer.schemas.ValueAnalyer_schema import ValueAnalyzerSchema
 from routes.ValueAnalyzer.dtos.ValueAnalyzer_dto import ValueAnalyzerCreate, ValueAnalyze
@@ -19,6 +20,7 @@ class ai_service:
     async def assess_value(self, data: ValueAnalyze, files: List[UploadFile]):
         topAnalyzer = TopMode(base_dir + '/core/analyzer_top/datasets/train/weights/best.pt')
         lateralAnalyzer = Lateral(base_dir + '/core/analyzer_lateral/datasets/train/weights/best.pt')
+        img_checker = Img_checker(base_dir + '/core/analyzer_img_checker/datasets/train/weights/best.pt')
         save_dir = base_dir + '/core/analyzer_lateral/datasets/test/images'
         current_time = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
         file_name = ''
@@ -43,6 +45,11 @@ class ai_service:
             with open(file_path, "wb") as f:
                 f.write(file.file.read())
 
+        # 이미지가 크레스티드 게코인지 확인 - 현재는 gecko 클래스 탐지하면 통과하함
+        img_checker.img_checking(topImgPath)
+        img_checker.img_checking(leftLateralImgPath)
+        img_checker.img_checking(righLateraltImgPath)
+
         # 머리, 등, 꼬리 검사
         try:
             topResult = topAnalyzer.analyze_image(topImgPath, current_time + "_top_")
@@ -64,8 +71,10 @@ class ai_service:
             # 예외 처리
             error_message = str(e)
             return {"error": error_message}
+
         total_score = (leftResult.get('score') + rightResult.get('score') + topResult.get("haed_score") + topResult.get(
             "tail_score") + topResult.get("dorsal_score")) / 5
+
         # 결과 저장
         result = ValueAnalyzerCreate.updateFrom(None, 'auto_save', data.moff, data.gender, topResult.get("haed_score"),
                                             topResult.get("dorsal_score"), topResult.get("tail_score"),
@@ -134,7 +143,10 @@ class ai_service:
         result_path = f"{save_dir}/{file_full_name}/{file_full_name}_genderImgPath.jpeg"
         # 이미지 저장
         with open(file_name, "wb") as f:
-            f.write(file.file.read())
+            await file.seek(0)
+            # 파일을 먼저 읽은 다음에 저장
+            contents = await file.read()
+            f.write(contents)
         # 본격적으로 성별 구분 기능 실행. 저장된 이미지 경로와 결과물 저장할 이름 만들 떄 필요한 값들 넣어줌
         genderResult = genderAnalyzer.analyze_image(file_name, save_dir, file_full_name)
 

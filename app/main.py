@@ -27,7 +27,6 @@ def create_app():
     # 레디스 이니셜라이즈
 
     # 미들웨어 정의
-    # app.add_middleware(FileUploadMiddleware)
     app.add_middleware(middleware_class=BaseHTTPMiddleware, dispatch=access_control)
     app.add_middleware(
         CORSMiddleware,

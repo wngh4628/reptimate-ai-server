@@ -55,6 +55,33 @@ class NotAuthorized(APIException):
             ex=ex,
         )
 
+class NotImgFile(APIException):
+    def __init__(self, ex: Exception = None):
+        super().__init__(
+            status_code=StatusCode.HTTP_500,
+            msg=f"해당 파일은 업로드 불가능합니다.",
+            detail=".jpeg, .jpg, .png 파일만 업로드 가능합니다.",
+            code=f"{StatusCode.HTTP_500}{'1'.zfill(4)}",
+            ex=ex,
+        )
+class FileOver(APIException):
+    def __init__(self, ex: Exception = None):
+        super().__init__(
+            status_code=StatusCode.HTTP_500,
+            msg=f"해당 파일의 용량이 너무 큽니다.",
+            detail="100mb 파일만 업로드 가능합니다.",
+            code=f"{StatusCode.HTTP_500}{'1'.zfill(4)}",
+            ex=ex,
+        )
+class NotGeckoImg(APIException):
+    def __init__(self, ex: Exception = None):
+        super().__init__(
+            status_code=StatusCode.HTTP_500,
+            msg=f"해당 이미지에 도마뱀을 찾을 수 없습니다.",
+            detail="다른 사진으로 시도해주세요.",
+            code=f"{StatusCode.HTTP_500}{'1'.zfill(4)}",
+            ex=ex,
+        )
 
 class TokenExpiredEx(APIException):
     def __init__(self, ex: Exception = None):
