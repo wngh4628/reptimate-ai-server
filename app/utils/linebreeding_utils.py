@@ -1,7 +1,7 @@
 import json
 
-from app.routes.ValueAnalyzer.dtos.ValueAnalyzer_dto import ValueAnalyzerCreate
-from app.utils.color_utils import rgb2lab
+from routes.ValueAnalyzer.dtos.ValueAnalyzer_dto import ValueAnalyzerCreate
+from utils.color_utils import rgb2lab
 
 # feature_order 의 모프 형질 순서에 맞게 리스트 재 선별하는 함수
 # 매개변수 : 전체 리스트, 사용자 개체 형질 순서, 유저의 레터럴 기준 위치, 선별 후 남은 데이터, 몇번째 진행되는지 넘버(총 세번 : 고정)
