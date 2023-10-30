@@ -47,7 +47,9 @@ class ai_service:
             # 파일을 지정된 디렉토리에 저장
             file_path = os.path.join(save_dir, file_name)
             with open(file_path, "wb") as f:
-                f.write(file.file.read())
+                await file.seek(0)
+                contents = await file.read()
+                f.write(contents)
 
         # 이미지가 크레스티드 게코인지 확인 - 현재는 gecko 클래스 탐지하면 통과하함
         img_checker.img_checking(topImgPath)
