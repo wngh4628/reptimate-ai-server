@@ -16,8 +16,8 @@ from core.database.conn import db
 from fastapi import HTTPException
 import shutil
 import json
-from app.utils.color_utils import find_similar_colors, rgb2lab
-from app.utils.linebreeding_utils import moff_re_selection, score_compare_selection, make_moff_explanation, sort_feature_order
+from utils.color_utils import find_similar_colors, rgb2lab
+from utils.linebreeding_utils import moff_re_selection, score_compare_selection, make_moff_explanation, sort_feature_order
 
 base_dir = path.dirname(path.dirname(path.dirname(path.abspath(__file__))))
 class ai_service:
@@ -59,6 +59,8 @@ class ai_service:
         # 머리, 등, 꼬리 검사
         try:
             topResult = topAnalyzer.analyze_image(topImgPath, current_time + "_top_")
+            # print("topResult")
+            # print(topResult)
         except Exception as e:
             # 예외 처리
             error_message = 'Top Part Error'
@@ -66,6 +68,8 @@ class ai_service:
         # 왼쪽 레터럴 검사
         try:
             leftResult = lateralAnalyzer.analyze_image(leftLateralImgPath, current_time + "_left_")
+            # print("leftResult")
+            # print(leftResult)
         except Exception as e:
             # 예외 처리
             error_message = str(e)
@@ -73,6 +77,8 @@ class ai_service:
         # 오른쪽 레터럴 검사
         try:
             rightResult = lateralAnalyzer.analyze_image(righLateraltImgPath, current_time + "_right_")
+            # print("rightResult")
+            # print(rightResult)
         except Exception as e:
             # 예외 처리
             error_message = str(e)

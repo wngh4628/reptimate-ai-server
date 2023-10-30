@@ -7,6 +7,7 @@ from core.database.conn import db
 from routes.ValueAnalyzer.service import ai_service
 from utils.FileChecker import FileChecker
 
+
 base_dir = path.dirname(path.dirname(path.dirname(path.abspath(__file__))))
 import os
 os.environ['KMP_DUPLICATE_LIB_OK']='True'
@@ -56,16 +57,14 @@ async def linebreedingRecommend(data: ValueAnalyze = Depends(), files: List[Uplo
     # 가치 판단 기능 실행
     UserResult = await ai_service.assess_value(data, files)  # assess_value 메서드 호출
     # 결과 데이터 및 이미지 s3 저장
-    # await ai_service.analyzer_auto_save(result, files, session)
+    # await ai_service.analyzer_auto_save(UserResult, files, session)
 
     print("UserResult")
     print(UserResult)
     print("UserResult")
-
     get_analyzer_result = await ai_service.get_analyzer_data(UserResult, session)  # 분석
 
-    print("get_analyzer_result")
-    print(get_analyzer_result)
-    print("get_analyzer_result")
-
     return get_analyzer_result
+
+    # else:
+    #     return UserResult

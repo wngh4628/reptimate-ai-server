@@ -29,7 +29,12 @@ class TopMode:
             masks = result.masks  # Masks object for segmentation masks outputs
             li = masks.xyn
 
+            for c in result.boxes.cls:
+                print('class num = ', int(c), ', class_name =', self.yolo_model.names[int(c)])
 
+            print("result.boxes.cls")
+            print(boxes)
+            print(masks)
             # 클래스의 좌표마다 이미지로 만들기
             num = 0
             for c in result.boxes.cls:
@@ -74,32 +79,42 @@ class TopMode:
                 cv2.imwrite(cropImgPath, dst)
                 num = num + 1
 
+        # print("head_exist")
+        # print(head_exist)
+        # print(dorsal_exist)
+        # print(tail_exist)
+        # print("tail_exist")
+
         # 머리와 도살을 잡았을때만 진행 시킴
         if head_exist == 1 and dorsal_exist == 1:
             top_result = {} # 전체 결과 값
             #도살 - 색 분석, 예외처리
             # 이미지 열기
-
             dorsal_img = Image.open(base_dir + "/core/analyzer_lateral/datasets/test/images/" + date + "cropped_image_dorsal.png")
 
             #색 분석하여 형질 추출 함수
             result = self.color_output(dorsal_img)
+
             #2차형질로 계산
             second_percent = result['second']
-            dorsal_score = 0
-            if second_percent >= 98:
-                dorsal_score = 100
-            elif second_percent >= 95 and second_percent < 98:
-                dorsal_score = 90
-            elif second_percent >= 92 and second_percent < 95:
-                dorsal_score = 80
-            elif second_percent >= 88 and second_percent < 92:
-                dorsal_score = 75
-            elif second_percent >= 80 and second_percent < 88:
-                dorsal_score = 70
-            elif second_percent >= 70 and second_percent < 80:
-                dorsal_score = 60
-            elif second_percent < 70:
+            if second_percent != 'null':
+                dorsal_score = 0
+                if second_percent >= 98:
+                    dorsal_score = 100
+                elif second_percent >= 95 and second_percent < 98:
+                    dorsal_score = 90
+                elif second_percent >= 92 and second_percent < 95:
+                    dorsal_score = 80
+                elif second_percent >= 88 and second_percent < 92:
+                    dorsal_score = 75
+                elif second_percent >= 80 and second_percent < 88:
+                    dorsal_score = 70
+                elif second_percent >= 70 and second_percent < 80:
+                    dorsal_score = 60
+                elif second_percent < 70:
+                    dorsal_score = 50
+            else:
+                second_percent == 0
                 dorsal_score = 50
 
             top_result["dorsal_second_percent"] = second_percent
