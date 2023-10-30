@@ -58,7 +58,7 @@ class Lateral:
         b, g, r = cv2.split(cropped_image)
         rgba = [b, g, r, alpha]
         dst = cv2.merge(rgba, 4)
-        cropImgPath = base_dir+'/app/core/analyzer_lateral/datasets/test/images/'+date+'cropped_image.png'
+        cropImgPath = base_dir+'/core/analyzer_lateral/datasets/test/images/'+date+'cropped_image.png'
         cv2.imwrite(cropImgPath, dst)
         img = Image.open(cropImgPath)
 

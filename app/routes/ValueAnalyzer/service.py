@@ -7,6 +7,7 @@ from core.analyzer_gender.gender import Gender
 from core.analyzer_img_checker.img_checker import Img_checker
 from utils.S3 import s3_uploader
 from routes.ValueAnalyzer.schemas.ValueAnalyer_schema import ValueAnalyzerSchema
+from routes.ValueAnalyzer.schemas.MoffList_schema import MoffListSchema
 from routes.ValueAnalyzer.dtos.ValueAnalyzer_dto import ValueAnalyzerCreate, ValueAnalyze
 from os import path
 import os
@@ -14,6 +15,9 @@ import datetime
 from core.database.conn import db
 from fastapi import HTTPException
 import shutil
+import json
+from app.utils.color_utils import find_similar_colors, rgb2lab
+from app.utils.linebreeding_utils import moff_re_selection, score_compare_selection, make_moff_explanation, sort_feature_order
 
 base_dir = path.dirname(path.dirname(path.dirname(path.abspath(__file__))))
 class ai_service:
@@ -166,3 +170,167 @@ class ai_service:
         os.remove(file_name)
         result = {"result": genderResult, "returnImg": returnImg['message'].split('URL: ')[1]}
         return result
+
+
+    async def get_analyzer_data(  # 분석 진행하기
+            self,
+            UserValueAnalyzer: ValueAnalyzerCreate,
+            session: Session = Depends(db.session)):
+
+        # 왼 오 중 더 잘나온 걸로 선택할 것.
+        left_info_object = json.loads(UserValueAnalyzer.left_info)
+        right_info_object = json.loads(UserValueAnalyzer.right_info)
+
+        left_feature_order = self.make_feature_order_list(left_info_object)
+        right_feature_order = self.make_feature_order_list(right_info_object)
+
+        print("left_feature_order")
+        print(left_feature_order)
+        print("right_feature_order")
+        print(right_feature_order)
+
+        final_direction_leteral = ""
+        feature_order = ""
+
+        # 왼쪽 오른쪽 레터럴 크기 비교 - 더 상태가 좋은걸로 평가하기 위한 비교
+        if left_feature_order[0][0] == right_feature_order[0][0]:
+            if left_feature_order[1][0] == right_feature_order[1][0]:
+                if left_feature_order[0][0] == 1 and right_feature_order[0][0] == 1: #1차 형질은 클수록 좋지 않다고 판단
+                    if left_feature_order[0][2] > right_feature_order[0][2]:
+                        final_direction_leteral = "right"
+                    elif left_feature_order[0][2] < right_feature_order[0][2]:
+                        final_direction_leteral = "left"
+                    else:
+                        final_direction_leteral = "left" # 같으면 왼쪽
+                elif left_feature_order[0][0] == 2 and right_feature_order[0][0] == 2: #2차 형질은 클수록 좋다고 판단
+                    if left_feature_order[0][2] > right_feature_order[0][2]:
+                        final_direction_leteral = "left"
+                    elif left_feature_order[0][2] < right_feature_order[0][2]:
+                        final_direction_leteral = "right"
+                    else:
+                        final_direction_leteral = "left"  # 같으면 왼쪽
+                elif left_feature_order[0][0] == 3 and right_feature_order[0][0] == 3: #3차 형질은 클수록 좋다고 판단
+                    if left_feature_order[0][2] > right_feature_order[0][2]:
+                        final_direction_leteral = "left"
+                    elif left_feature_order[0][2] < right_feature_order[0][2]:
+                        final_direction_leteral = "right"
+                    else:
+                        final_direction_leteral = "left"  # 같으면 왼쪽
+            elif left_feature_order[1][0] > right_feature_order[1][0]:
+                final_direction_leteral = "left"
+            elif left_feature_order[1][0] < right_feature_order[1][0]:
+                final_direction_leteral = "right"
+        elif left_feature_order[0][0] > right_feature_order[0][0]:
+            final_direction_leteral = "left"
+        elif left_feature_order[0][0] < right_feature_order[0][0]:
+            final_direction_leteral = "right"
+
+        #최종 평가 방향 선택
+        if final_direction_leteral == "left":
+            feature_order = left_feature_order
+        elif final_direction_leteral == "right":
+            feature_order = right_feature_order
+
+        # 분석 결과 데이터 전부 가져오기
+        ValueAnalyzer_datas = await self.get_analyzer_all_data(session)  # assess_value 메서드 호출
+
+        # feature_order의 순서에서 첫번째 데이터 수집
+        search_list = moff_re_selection(ValueAnalyzer_datas, feature_order, final_direction_leteral, [], 1)
+
+        #유사도 임계값
+        threshold = 50  # Adjust the threshold to control similarity tolerance
+
+        # 가상 유사도가 높은 컬러의 개체 추출
+        similar_datas = find_similar_colors(feature_order[0][1], search_list, threshold)
+        print("Similar colors _1:", similar_datas)
+
+        if feature_order[1][1] != 0:  # 유저 RGB 순서 데이터에서 빈 값이 있으면 추가하지 않는다.
+            # 두번째로 큰 형질 리스트 수집
+            search_list = moff_re_selection(ValueAnalyzer_datas, feature_order, final_direction_leteral, similar_datas[1], 2)
+
+            # 가상 유사도가 높은 컬러의 개체 추출
+            similar_datas = find_similar_colors(feature_order[1][1], search_list, threshold)
+            print("Similar colors _2:", similar_datas)
+
+        if feature_order[2][1] != 0:  # 유저 RGB 순서 데이터에서 빈 값이 있으면 추가하지 않는다.
+            # 세번째로 큰 형질 리스트 수집
+            search_list = moff_re_selection(ValueAnalyzer_datas, feature_order, final_direction_leteral, similar_datas[1], 3)
+
+            # 가상 유사도가 높은 컬러의 개체 추출
+            similar_datas = find_similar_colors(feature_order[2][1], search_list, threshold)
+            print("Similar colors _3:", similar_datas)
+
+        # 네번째로 레터럴, 도살 점수로 리스트 수집
+        # 이 중에서 레터럴점수, 도살 점수, 다른 성별 의 조건으로 서치
+        # 레터럴 점수가 같거나, 도살 점수가 같거나 클 경우 만 리스트업
+        search_list = score_compare_selection(ValueAnalyzer_datas, UserValueAnalyzer, similar_datas[1])
+        print("final_select - 레터럴점수, 도살 점수, 다른 성별 의 조건으로 서치")
+        print(search_list)
+
+        if len(search_list) != 0: # 추천 개체가 있는 경우
+            # 모프 가치 결과로 모프 설명 만들기
+            explan_data = make_moff_explanation(UserValueAnalyzer, feature_order)
+
+            # moff 추천 리스트
+            moff_recommend_list = await self.get_one_moff_condition(UserValueAnalyzer.moff, session)
+            if len(moff_recommend_list) != 0:
+                # 데이터 합치기
+                result = {
+                    "recommend_data":{
+                        "moff": ValueAnalyzer_datas[search_list[0]].moff,
+                        "gender": ValueAnalyzer_datas[search_list[0]].gender,
+                        "top_img": ValueAnalyzer_datas[search_list[0]].top_img,
+                        "left_img": ValueAnalyzer_datas[search_list[0]].left_img,
+                        "right_img": ValueAnalyzer_datas[search_list[0]].right_img,
+                    },
+                    "explanation": explan_data,
+                    "moff_recommend_list": moff_recommend_list[0].moff_recommend,
+                }
+            else:
+                result = "moff 이름이 잘못 되었습니다. "
+        else: # 추천 개체가 없을 경우
+            result = "추천 가능한 개체가 없습니다. "
+
+        return result
+
+    async def get_analyzer_all_data( #분석 데이터 전부 불러오기
+            self,
+            session: Session = Depends(db.session)):
+
+        ValueAnalyzer_datas = session.query(ValueAnalyzerSchema).all()  # User 객체와 User 중 이름만을 select함
+
+        return ValueAnalyzer_datas
+
+    async def get_one_moff_condition( #모프 종류, 추천 모프 데이터 가져오기
+            self,
+            moff_name,
+            session: Session = Depends(db.session)):
+
+        MoffListSchema_datas = session.query(MoffListSchema).filter(MoffListSchema.name == moff_name).all()
+
+        return MoffListSchema_datas
+
+    #형질 순서 리스트를 민듬
+    def make_feature_order_list(self, info_object):
+        # 1. 레터럴 점수(왼, 오), 도살 점수, 비슷한 색상(어떻게 구할 것인가?) 다른 성별을 조건으로 검색함.
+        first_feature = 100 - info_object['SecondPercent']
+        second_feature = info_object['SecondPercent']
+        third_feature = info_object['ThirdPercent']
+
+        feature_order = []
+        # #모프 색에 맞게 순서 행렬에 넣어주기
+        if len(info_object['RGB']) >= 3:
+            feature_order = [[1, rgb2lab(info_object['RGB'][0]), first_feature],
+                             [2, rgb2lab(info_object['RGB'][1]), second_feature],
+                             [3, rgb2lab(info_object['RGB'][2]), third_feature]]
+        elif len(info_object['RGB']) == 2:
+            feature_order = [[1, rgb2lab(info_object['RGB'][0]), first_feature],
+                             [2, rgb2lab(info_object['RGB'][1]), second_feature],
+                             [3, 0, 0]]
+        elif len(info_object['RGB']) == 1:
+            feature_order = [[1, rgb2lab(info_object['RGB'][0]), first_feature],
+                             [2, 0, 0],
+                             [3, 0, 0]]
+
+        feature_order = sort_feature_order(feature_order)
+        return feature_order

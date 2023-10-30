@@ -48,3 +48,24 @@ async def gender_discrimination(
     return genderResult
 
 
+@router.post("/linebreeding_recommend", summary="도마뱀 라인브리딩 추천", description="*files의 첫 번째에는 Top 이미지 두번쨰에는 Left 마지막은 Right")
+async def linebreedingRecommend(data: ValueAnalyze = Depends(), files: List[UploadFile] = File(...),
+        ai_service: ai_service = Depends(ai_service),
+        session: Session = Depends(db.session)):
+
+    # 가치 판단 기능 실행
+    UserResult = await ai_service.assess_value(data, files)  # assess_value 메서드 호출
+    # 결과 데이터 및 이미지 s3 저장
+    # await ai_service.analyzer_auto_save(result, files, session)
+
+    print("UserResult")
+    print(UserResult)
+    print("UserResult")
+
+    get_analyzer_result = await ai_service.get_analyzer_data(UserResult, session)  # 분석
+
+    print("get_analyzer_result")
+    print(get_analyzer_result)
+    print("get_analyzer_result")
+
+    return get_analyzer_result
