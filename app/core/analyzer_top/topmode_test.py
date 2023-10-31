@@ -32,9 +32,9 @@ class TopMode:
             for c in result.boxes.cls:
                 print('class num = ', int(c), ', class_name =', self.yolo_model.names[int(c)])
 
-            print("result.boxes.cls")
-            print(boxes)
-            print(masks)
+            # print("result.boxes.cls")
+            # print(boxes)
+            # print(masks)
             # 클래스의 좌표마다 이미지로 만들기
             num = 0
             for c in result.boxes.cls:

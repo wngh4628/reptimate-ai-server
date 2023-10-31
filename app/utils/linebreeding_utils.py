@@ -126,10 +126,12 @@ def make_moff_explanation(result, feature_order):
         #2차와 3차가 "+feature_percent_2+"%"
         if feature_order[1][2] != 0:
             feature_ex += "2차가 " + str(feature_percent_2) + "%"
+            feature_ex += "로 낮습니다. "
         if feature_order[2][2] != 0:
             feature_ex += ", 3차가 " + str(feature_percent_3) + "%"
+            feature_ex += "로 낮습니다. "
 
-        feature_ex += "로 낮습니다. "
+
     elif feature_order[0][0] == 2:
         feature_ex += "2차 형질"
         feature_percent = round(feature_order[0][2])
@@ -208,15 +210,20 @@ def make_moff_explanation(result, feature_order):
     leteral_high_list = ""
     if feature_order[0][0] == 1:
         if feature_order[0][2] >= 50:
-            leteral_high_list += "1차 형질과"
-    if feature_order[0][0] == 2:
+            if feature_order[1][2] >= 50 or feature_order[2][2] >= 50:
+                leteral_high_list += "2차 형질과 3차 형질 "
+            else:
+                leteral_high_list += "2차 형질과 3차 형질 "
+        else:
+            leteral_high_list += "2차 형질과 3차 형질 "
+    elif feature_order[0][0] == 2:
         if feature_order[0][2] >= 50:
             leteral_high_list += "2차 형질과"
-    if feature_order[0][0] == 3:
+    elif feature_order[0][0] == 3:
         if feature_order[0][2] >= 50:
             leteral_high_list += "3차 형질과"
 
-    feature_ex3 += leteral_high_list[:-1] + "이 높은 도마뱀과 매이텡을 했을때 좋은 장점이 될 수 있습니다. "
+    feature_ex3 += leteral_high_list[:-1] + "이 높은 도마뱀과 메이팅을 했을때 좋은 장점이 될 수 있습니다. "
 
     # 내용 합치기
     moff_explan += feature_ex + feature_ex2 + feature_ex3

@@ -59,8 +59,9 @@ class ai_service:
         # 머리, 등, 꼬리 검사
         try:
             topResult = topAnalyzer.analyze_image(topImgPath, current_time + "_top_")
-            # print("topResult")
-            # print(topResult)
+
+            print("topResult")
+            print(topResult)
         except Exception as e:
             # 예외 처리
             error_message = 'Top Part Error'
@@ -68,8 +69,8 @@ class ai_service:
         # 왼쪽 레터럴 검사
         try:
             leftResult = lateralAnalyzer.analyze_image(leftLateralImgPath, current_time + "_left_")
-            # print("leftResult")
-            # print(leftResult)
+            print("leftResult")
+            print(leftResult)
         except Exception as e:
             # 예외 처리
             error_message = str(e)
@@ -77,8 +78,8 @@ class ai_service:
         # 오른쪽 레터럴 검사
         try:
             rightResult = lateralAnalyzer.analyze_image(righLateraltImgPath, current_time + "_right_")
-            # print("rightResult")
-            # print(rightResult)
+            print("rightResult")
+            print(rightResult)
         except Exception as e:
             # 예외 처리
             error_message = str(e)
@@ -246,7 +247,7 @@ class ai_service:
         search_list = moff_re_selection(ValueAnalyzer_datas, feature_order, final_direction_leteral, [], 1)
 
         #유사도 임계값
-        threshold = 50  # Adjust the threshold to control similarity tolerance
+        threshold = 20  # Adjust the threshold to control similarity tolerance
 
         # 가상 유사도가 높은 컬러의 개체 추출
         similar_datas = find_similar_colors(feature_order[0][1], search_list, threshold)
