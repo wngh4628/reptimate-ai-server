@@ -12,9 +12,14 @@ class Img_checker:
         found_gecko = False
         if len(resultData[0].boxes.cls) == 0:
             raise ex.NotGeckoImg()
+        # 가장 높은 신뢰도를 갖는 인덱스를 찾기
+        confidences = resultData[0].boxes.conf
+        max_conf_index = confidences.argmax()
 
-        print('class_name =', self.yolo_model.names[int(resultData[0].boxes.cls)])
-        class_name = self.yolo_model.names[int(resultData[0].boxes.cls)]
+        # 해당 인덱스에 대응하는 클래스 가져오기
+        class_index = int(resultData[0].boxes.cls[max_conf_index])
+        class_name = self.yolo_model.names[class_index]
+        print('class_name =', class_name)
         if 'gecko' in class_name:
             found_gecko = True
 
