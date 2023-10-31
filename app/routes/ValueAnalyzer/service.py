@@ -247,7 +247,7 @@ class ai_service:
         search_list = moff_re_selection(ValueAnalyzer_datas, feature_order, final_direction_leteral, [], 1)
 
         #유사도 임계값
-        threshold = 20  # Adjust the threshold to control similarity tolerance
+        threshold = 30  # Adjust the threshold to control similarity tolerance
 
         # 가상 유사도가 높은 컬러의 개체 추출
         similar_datas = find_similar_colors(feature_order[0][1], search_list, threshold)
