@@ -19,7 +19,6 @@ class Img_checker:
         # 해당 인덱스에 대응하는 클래스 가져오기
         class_index = int(resultData[0].boxes.cls[max_conf_index])
         class_name = self.yolo_model.names[class_index]
-        print('class_name =', class_name)
         if 'gecko' in class_name:
             found_gecko = True
 

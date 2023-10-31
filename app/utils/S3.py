@@ -12,7 +12,7 @@ base_dir = path.dirname(path.dirname(path.dirname(path.abspath(__file__))))
 
 class S3Uploader:
     def __init__(self, bucket_name, region, access_key, secret_key):
-        print('bucket_name', bucket_name)
+        print('bucket_name', base_dir + '/app/.env')
         self.bucket_name = bucket_name
         self.region = region
         self.access_key = access_key
