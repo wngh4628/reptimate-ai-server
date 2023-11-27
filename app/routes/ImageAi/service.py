@@ -59,8 +59,6 @@ class image_ai_service:
         # 머리, 등, 꼬리 검사
         try:
             topResult = topAnalyzer.analyze_image(topImgPath, current_time + "_top_")
-
-            print("topResult")
             print(topResult)
         except Exception as e:
             # 예외 처리
@@ -69,7 +67,6 @@ class image_ai_service:
         # 왼쪽 레터럴 검사
         try:
             leftResult = lateralAnalyzer.analyze_image(leftLateralImgPath, current_time + "_left_")
-            print("leftResult")
             print(leftResult)
         except Exception as e:
             # 예외 처리
@@ -78,7 +75,6 @@ class image_ai_service:
         # 오른쪽 레터럴 검사
         try:
             rightResult = lateralAnalyzer.analyze_image(righLateraltImgPath, current_time + "_right_")
-            print("rightResult")
             print(rightResult)
         except Exception as e:
             # 예외 처리
