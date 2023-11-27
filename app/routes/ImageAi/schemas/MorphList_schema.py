@@ -11,7 +11,7 @@ from sqlalchemy import (
     ForeignKey,
 )
 
-class MoffListSchema(Base, BaseMixin):
-    __tablename__ = "moff_list"
+class MorphListSchema(Base, BaseMixin):
+    __tablename__ = "morph_list"
     name = Column(Integer, nullable=True)
-    moff_recommend = Column(String(length=100), nullable=True)
+    morph_recommend = Column(String(length=100), nullable=True)

@@ -15,7 +15,7 @@ class ValueAnalyzerSchema(Base, BaseMixin):
     __tablename__ = "value_analyzer"
     user_idx = Column(Integer, nullable=True)
     pet_name = Column(String(length=100), nullable=True)
-    moff = Column(String(length=100), nullable=False)
+    morph = Column(String(length=100), nullable=False)
     gender = Column(String(length=100), nullable=False)
     head_score = Column(Integer, nullable=False)
     dorsal_score = Column(Integer, nullable=False)

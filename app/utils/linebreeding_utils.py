@@ -5,7 +5,7 @@ from utils.color_utils import rgb2lab
 
 # feature_order 의 모프 형질 순서에 맞게 리스트 재 선별하는 함수
 # 매개변수 : 전체 리스트, 사용자 개체 형질 순서, 유저의 레터럴 기준 위치, 선별 후 남은 데이터, 몇번째 진행되는지 넘버(총 세번 : 고정)
-def moff_re_selection(ValueAnalyzer_datas:ValueAnalyzerCreate, feature_order:[], final_direction_leteral:str, rest_datas:[], count:int): #moff_re_selection
+def morph_re_selection(ValueAnalyzer_datas:ValueAnalyzerCreate, feature_order:[], final_direction_leteral:str, rest_datas:[], count:int): #morph_re_selection
     search_list = [] # 수정된 전체 리스트
 
     # #1차 2차 3차 색상 리스트
@@ -110,8 +110,8 @@ def sort_feature_order(feature_order):
     feature_order.sort(key=lambda x: x[2], reverse=True)  # array.sort() 와 동일.
     return feature_order
 
-def make_moff_explanation(result, feature_order):
-    moff_explan = "해당 도마뱀은 "
+def make_morph_explanation(result, feature_order):
+    morph_explan = "해당 도마뱀은 "
     feature_ex = ""
     feature_ex2 = "그리고 "
     feature_ex3 = ""
@@ -226,9 +226,9 @@ def make_moff_explanation(result, feature_order):
     feature_ex3 += leteral_high_list[:-1] + "이 높은 도마뱀과 메이팅을 했을때 좋은 장점이 될 수 있습니다. "
 
     # 내용 합치기
-    moff_explan += feature_ex + feature_ex2 + feature_ex3
+    morph_explan += feature_ex + feature_ex2 + feature_ex3
 
     # 예) 해당 도마뱀은 (2차 형질)이 (97퍼센트)로 높은 장점이 있습니다. 그리고 (머리, 도살, 왼쪽 레터럴)이 (높은 점수)를 받았으며 (전체적으로 고퀄에 해당)하는 모프를 갖추고 있습니다.
     #                                                        80 이상 높은 점수, 80 이하 50 이상 중간 점수, 50 이하 낮은 점수  / 고, 중, 고
     # 레터럴의 (2차 형질)과 (3차형질)이 높은 도마뱀과 메이팅을 했을때 좋은 장점이 될 수 있습니다.
-    return moff_explan
+    return morph_explan

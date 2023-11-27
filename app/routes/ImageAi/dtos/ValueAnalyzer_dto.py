@@ -4,7 +4,7 @@ from typing import Optional
 class ValueAnalyzerCreate(BaseModel):
     user_idx: Optional[int] = None
     pet_name: str = '릴리'
-    moff: str = '릴리 화이트'
+    morph: str = '릴리 화이트'
     gender: str = '암컷'
     head_score: int = 60
     dorsal_score: int = 80
@@ -22,7 +22,7 @@ class ValueAnalyzerCreate(BaseModel):
     def updateFrom(
             user_idx: int,
             pet_name: str,
-            moff: str,
+            morph: str,
             gender: str,
             head_score: int,
             dorsal_score: int,
@@ -39,7 +39,7 @@ class ValueAnalyzerCreate(BaseModel):
         value_analyzer_create = ValueAnalyzerCreate(
             user_idx=user_idx,
             pet_name=pet_name,
-            moff=moff,
+            morph=morph,
             gender=gender,
             head_score=head_score,
             dorsal_score=dorsal_score,
@@ -53,5 +53,5 @@ class ValueAnalyzerCreate(BaseModel):
         return value_analyzer_create
 
 class ValueAnalyze(BaseModel):
-    moff: str = '릴리 화이트'
+    morph: str = '릴리 화이트'
     gender: str = '암컷'

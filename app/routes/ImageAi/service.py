@@ -6,9 +6,9 @@ from core.analyzer_top.topmode_test import TopMode
 from core.analyzer_gender.gender import Gender
 from core.analyzer_img_checker.img_checker import Img_checker
 from utils.S3 import s3_uploader
-from routes.TextAi.schemas.ChattingBot_schema import ValueAnalyzerSchema
-# from routes.TextAi.schemas.MoffList_schema import MoffListSchema
-from routes.TextAi.dtos.ChattingBot_dto import ValueAnalyzerCreate, ValueAnalyze
+from routes.ImageAi.schemas.ValueAnalyzer_schema import ValueAnalyzerSchema
+from routes.ImageAi.schemas.MorphList_schema import MorphListSchema
+from routes.ImageAi.dtos.ValueAnalyzer_dto import ValueAnalyzerCreate, ValueAnalyze
 from os import path
 import os
 import datetime
@@ -17,10 +17,10 @@ from fastapi import HTTPException
 import shutil
 import json
 from utils.color_utils import find_similar_colors, rgb2lab
-from utils.linebreeding_utils import moff_re_selection, score_compare_selection, make_moff_explanation, sort_feature_order
+from utils.linebreeding_utils import morph_re_selection, score_compare_selection, make_morph_explanation, sort_feature_order
 
 base_dir = path.dirname(path.dirname(path.dirname(path.abspath(__file__))))
-class ai_service:
+class image_ai_service:
     async def assess_value(self, data: ValueAnalyze, files: List[UploadFile]):
         topAnalyzer = TopMode(base_dir + '/core/analyzer_top/datasets/train/weights/best.pt')
         lateralAnalyzer = Lateral(base_dir + '/core/analyzer_lateral/datasets/train/weights/best.pt')
@@ -89,7 +89,7 @@ class ai_service:
             "tail_score") + topResult.get("dorsal_score")) / 5
 
         # 결과 저장
-        result = ValueAnalyzerCreate.updateFrom(None, 'auto_save', data.moff, data.gender, topResult.get("haed_score"),
+        result = ValueAnalyzerCreate.updateFrom(None, 'auto_save', data.morph, data.gender, topResult.get("haed_score"),
                                             topResult.get("dorsal_score"), topResult.get("tail_score"),
                                             leftResult.get('score'),rightResult.get('score'),
                                             total_score, leftResult, rightResult)
@@ -244,7 +244,7 @@ class ai_service:
         ValueAnalyzer_datas = await self.get_analyzer_all_data(session)  # assess_value 메서드 호출
 
         # feature_order의 순서에서 첫번째 데이터 수집
-        search_list = moff_re_selection(ValueAnalyzer_datas, feature_order, final_direction_leteral, [], 1)
+        search_list = morph_re_selection(ValueAnalyzer_datas, feature_order, final_direction_leteral, [], 1)
 
         #유사도 임계값
         threshold = 30  # Adjust the threshold to control similarity tolerance
@@ -255,7 +255,7 @@ class ai_service:
 
         if feature_order[1][1] != 0:  # 유저 RGB 순서 데이터에서 빈 값이 있으면 추가하지 않는다.
             # 두번째로 큰 형질 리스트 수집
-            search_list = moff_re_selection(ValueAnalyzer_datas, feature_order, final_direction_leteral, similar_datas[1], 2)
+            search_list = morph_re_selection(ValueAnalyzer_datas, feature_order, final_direction_leteral, similar_datas[1], 2)
 
             # 가상 유사도가 높은 컬러의 개체 추출
             similar_datas = find_similar_colors(feature_order[1][1], search_list, threshold)
@@ -263,7 +263,7 @@ class ai_service:
 
         if feature_order[2][1] != 0:  # 유저 RGB 순서 데이터에서 빈 값이 있으면 추가하지 않는다.
             # 세번째로 큰 형질 리스트 수집
-            search_list = moff_re_selection(ValueAnalyzer_datas, feature_order, final_direction_leteral, similar_datas[1], 3)
+            search_list = morph_re_selection(ValueAnalyzer_datas, feature_order, final_direction_leteral, similar_datas[1], 3)
 
             # 가상 유사도가 높은 컬러의 개체 추출
             similar_datas = find_similar_colors(feature_order[2][1], search_list, threshold)
@@ -278,25 +278,25 @@ class ai_service:
 
         if len(search_list) != 0: # 추천 개체가 있는 경우
             # 모프 가치 결과로 모프 설명 만들기
-            explan_data = make_moff_explanation(UserValueAnalyzer, feature_order)
+            explan_data = make_morph_explanation(UserValueAnalyzer, feature_order)
 
-            # moff 추천 리스트
-            moff_recommend_list = await self.get_one_moff_condition(UserValueAnalyzer.moff, session)
-            if len(moff_recommend_list) != 0:
+            # morph 추천 리스트
+            morph_recommend_list = await self.get_one_morph_condition(UserValueAnalyzer.morph, session)
+            if len(morph_recommend_list) != 0:
                 # 데이터 합치기
                 result = {
                     "recommend_data":{
-                        "moff": ValueAnalyzer_datas[search_list[0]].moff,
+                        "morph": ValueAnalyzer_datas[search_list[0]].morph,
                         "gender": ValueAnalyzer_datas[search_list[0]].gender,
                         "top_img": ValueAnalyzer_datas[search_list[0]].top_img,
                         "left_img": ValueAnalyzer_datas[search_list[0]].left_img,
                         "right_img": ValueAnalyzer_datas[search_list[0]].right_img,
                     },
                     "explanation": explan_data,
-                    "moff_recommend_list": moff_recommend_list[0].moff_recommend,
+                    "morph_recommend_list": morph_recommend_list[0].morph_recommend,
                 }
             else:
-                result = "moff 이름이 잘못 되었습니다. "
+                result = "morph 이름이 잘못 되었습니다. "
         else: # 추천 개체가 없을 경우
             result = "추천 가능한 개체가 없습니다. "
 
@@ -310,14 +310,14 @@ class ai_service:
 
         return ValueAnalyzer_datas
 
-    async def get_one_moff_condition( #모프 종류, 추천 모프 데이터 가져오기
+    async def get_one_morph_condition( #모프 종류, 추천 모프 데이터 가져오기
             self,
-            moff_name,
+            morph_name,
             session: Session = Depends(db.session)):
 
-        MoffListSchema_datas = session.query(MoffListSchema).filter(MoffListSchema.name == moff_name).all()
+        morphListSchema_datas = session.query(morphListSchema).filter(morphListSchema.name == morph_name).all()
 
-        return MoffListSchema_datas
+        return morphListSchema_datas
 
     #형질 순서 리스트를 민듬
     def make_feature_order_list(self, info_object):
