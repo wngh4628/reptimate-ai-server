@@ -1,0 +1,10 @@
+Traceback (most recent call last):
+  File "/Users/humphrey/anaconda3/envs/fastapi/bin/uvicorn", line 5, in <module>
+    from uvicorn.main import main
+  File "/Users/humphrey/anaconda3/envs/fastapi/lib/python3.9/site-packages/uvicorn/__init__.py", line 1, in <module>
+    from uvicorn.config import Config
+  File "/Users/humphrey/anaconda3/envs/fastapi/lib/python3.9/site-packages/uvicorn/config.py", line 26, in <module>
+    from uvicorn._types import ASGIApplication
+  File "/Users/humphrey/anaconda3/envs/fastapi/lib/python3.9/site-packages/uvicorn/_types.py", line 54, in <module>
+    from typing_extensions import NotRequired
+ImportError: cannot import name 'NotRequired' from 'typing_extensions' (/Users/humphrey/anaconda3/envs/fastapi/lib/python3.9/site-packages/typing_extensions.py)

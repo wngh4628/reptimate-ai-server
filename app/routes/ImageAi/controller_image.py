@@ -2,18 +2,18 @@ from typing import List
 from fastapi import Depends, UploadFile, APIRouter, File
 from os import path
 from sqlalchemy.orm import Session
-from routes.ValueAnalyzer.dtos.ValueAnalyzer_dto import ValueAnalyzerCreate,ValueAnalyze
+from routes.ImageAi.dtos.ValueAnalyzer_dto import ValueAnalyzerCreate,ValueAnalyze
 from core.database.conn import db
-from routes.ValueAnalyzer.service import ai_service
+from routes.ImageAi.service import ai_service
 from utils.FileChecker import FileChecker
 
 
 base_dir = path.dirname(path.dirname(path.dirname(path.abspath(__file__))))
 import os
 os.environ['KMP_DUPLICATE_LIB_OK']='True'
-router = APIRouter(prefix='/ai')
+router = APIRouter(prefix='/image_ai')
 
-@router.post("/ValueAnalyzer", summary="도마뱀 가치 판단 기능", description="*files의 첫 번째에는 Top 이미지 두번쨰에는 left 마지막은 right")
+@router.post("/ImageAi", summary="도마뱀 가치 판단 기능", description="*files의 첫 번째에는 Top 이미지 두번쨰에는 left 마지막은 right")
 async def assessValue(data: ValueAnalyze = Depends(), files: List[UploadFile] = File(...),
         ai_service: ai_service = Depends(ai_service),
         session: Session = Depends(db.session)):
@@ -26,7 +26,7 @@ async def assessValue(data: ValueAnalyze = Depends(), files: List[UploadFile] = 
 
     return result
 
-@router.post("/analyzer_save", summary="결과 저장하는 기능", description="*로그인 되어야 저장 가능합니다. 로그인 안됬으면 로그인 후에 해당 기능 실행해주세요!")
+@router.post("/analyzer_save", summary="가치 판단 후 결과 저장하는 기능", description="*로그인 되어야 저장 가능합니다. 로그인 안됬으면 로그인 후에 해당 기능 실행해주세요!")
 async def analyzer_save(
         idx: int,
         userIdx: int,
@@ -65,6 +65,3 @@ async def linebreedingRecommend(data: ValueAnalyze = Depends(), files: List[Uplo
     get_analyzer_result = await ai_service.get_analyzer_data(UserResult, session)  # 분석
 
     return get_analyzer_result
-
-    # else:
-    #     return UserResult

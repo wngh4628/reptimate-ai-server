@@ -53,5 +53,4 @@ class ValueAnalyzerCreate(BaseModel):
         return value_analyzer_create
 
 class ValueAnalyze(BaseModel):
-    moff: str = '릴리 화이트'
-    gender: str = '암컷'
+    request_text: str = '크레스티드 게코의 먹이에 대해서 설명해줘'

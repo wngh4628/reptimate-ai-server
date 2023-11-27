@@ -6,9 +6,9 @@ from core.analyzer_top.topmode_test import TopMode
 from core.analyzer_gender.gender import Gender
 from core.analyzer_img_checker.img_checker import Img_checker
 from utils.S3 import s3_uploader
-from routes.ValueAnalyzer.schemas.ValueAnalyer_schema import ValueAnalyzerSchema
-from routes.ValueAnalyzer.schemas.MoffList_schema import MoffListSchema
-from routes.ValueAnalyzer.dtos.ValueAnalyzer_dto import ValueAnalyzerCreate, ValueAnalyze
+from routes.TextAi.schemas.ChattingBot_schema import ValueAnalyzerSchema
+# from routes.TextAi.schemas.MoffList_schema import MoffListSchema
+from routes.TextAi.dtos.ChattingBot_dto import ValueAnalyzerCreate, ValueAnalyze
 from os import path
 import os
 import datetime
@@ -103,7 +103,7 @@ class ai_service:
 
         # s3_uploader를 사용하여 이미지 업로드
         for idx, file in enumerate(files):
-            uploaded_image = s3_uploader.upload_image(file, 'ValueAnalyzer')
+            uploaded_image = s3_uploader.upload_image(file, 'ImageAi')
             image_url = uploaded_image['message'].split('URL: ')[1]
             # idx에 따라 필드 설정
             if idx == 0:
@@ -113,7 +113,7 @@ class ai_service:
             elif idx == 2:
                 result.right_img = image_url
 
-        value_analyzer = ValueAnalyzerSchema(**result.dict())  # ValueAnalyzerCreate 모델의 데이터를 ValueAnalyzer 모델로 변환
+        value_analyzer = ValueAnalyzerSchema(**result.dict())  # ValueAnalyzerCreate 모델의 데이터를 ImageAi 모델로 변환
         session.add(value_analyzer)
         session.commit()
         session.refresh(value_analyzer)

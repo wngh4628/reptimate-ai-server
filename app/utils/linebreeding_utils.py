@@ -1,6 +1,6 @@
 import json
 
-from routes.ValueAnalyzer.dtos.ValueAnalyzer_dto import ValueAnalyzerCreate
+from routes.ImageAi.dtos.ValueAnalyzer_dto import ValueAnalyzerCreate
 from utils.color_utils import rgb2lab
 
 # feature_order 의 모프 형질 순서에 맞게 리스트 재 선별하는 함수
