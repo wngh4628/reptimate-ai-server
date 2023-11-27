@@ -53,4 +53,4 @@ from typing import Optional
 #         return value_analyzer_create
 
 class ChattingBot(BaseModel):
-    request_text: str = '크레스티드 게코의 먹이에 대해서 설명해줘'
+    request_text: str = '크레스티드 게코의 신체구조에 대해서 알려주면 정말 좋을 거 같아'

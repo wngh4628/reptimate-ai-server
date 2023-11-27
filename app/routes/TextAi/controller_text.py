@@ -15,19 +15,12 @@ router = APIRouter(prefix='/text_ai')
 
 @router.post("/chatting_bot", summary="채팅 봇", description="자연어 생성 모델을 통해 답변을 추출한다.")
 async def chattingBot(data: ChattingBot = Depends(),
-        text_ai_service: text_ai_service = Depends(text_ai_service),
-        session: Session = Depends(db.session)):
+                      text_ai_service: text_ai_service = Depends(text_ai_service),
+                      session: Session = Depends(db.session)):
+    #챗봇 분류해주는 기능
+    predict_result = await text_ai_service.response_chatting_bot(data)
 
-    # 가치 판단 기능 실행
-    UserResult = await text_ai_service.response_chatting_bot(data)  # assess_value 메서드 호출
-    print("UserResult")
-    print(UserResult)
-    # 결과 데이터 및 이미지 s3 저장
-    # await ai_service.analyzer_auto_save(UserResult, files, session)
+    #db에서 분류 class에 맞는 내용 가져오는 기능
+    document = await text_ai_service.get_chatting_document(predict_result, session)
 
-    # print("UserResult")
-    # print(UserResult)
-    # print("UserResult")
-    # get_analyzer_result = await text_ai_service.get_analyzer_data(UserResult, session)  # 분석
-
-    return 1
+    return document
