@@ -19,7 +19,9 @@ async def chattingBot(data: ChattingBot = Depends(),
         session: Session = Depends(db.session)):
 
     # 가치 판단 기능 실행
-    # UserResult = await text_ai_service.response_chatting_bot(data, files)  # assess_value 메서드 호출
+    UserResult = await text_ai_service.response_chatting_bot(data)  # assess_value 메서드 호출
+    print("data")
+    print(data)
     # 결과 데이터 및 이미지 s3 저장
     # await ai_service.analyzer_auto_save(UserResult, files, session)
 
@@ -28,4 +30,4 @@ async def chattingBot(data: ChattingBot = Depends(),
     # print("UserResult")
     # get_analyzer_result = await text_ai_service.get_analyzer_data(UserResult, session)  # 분석
 
-    return 1
+    return data
