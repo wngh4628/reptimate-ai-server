@@ -21,6 +21,6 @@ from utils.linebreeding_utils import morph_re_selection, score_compare_selection
 base_dir = path.dirname(path.dirname(path.dirname(path.abspath(__file__))))
 class text_ai_service:
     #챗봇 답변 주는 기능
-    def response_chatting_bot(self, info_object):
+    async def response_chatting_bot(self, info_object):
 
         return 1
