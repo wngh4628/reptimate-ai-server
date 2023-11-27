@@ -1,11 +1,10 @@
 from typing import List
-from fastapi import Depends, UploadFile, APIRouter, File
+from fastapi import Depends, APIRouter
 from os import path
 from sqlalchemy.orm import Session
 from routes.TextAi.dtos.ChattingBot_dto import ChattingBot
 from core.database.conn import db
 from routes.TextAi.service import text_ai_service
-from utils.FileChecker import FileChecker
 
 
 base_dir = path.dirname(path.dirname(path.dirname(path.abspath(__file__))))
