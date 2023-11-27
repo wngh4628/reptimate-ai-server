@@ -315,7 +315,7 @@ class image_ai_service:
             morph_name,
             session: Session = Depends(db.session)):
 
-        morphListSchema_datas = session.query(morphListSchema).filter(morphListSchema.name == morph_name).all()
+        morphListSchema_datas = session.query(MorphListSchema).filter(MorphListSchema.name == morph_name).all()
 
         return morphListSchema_datas
 
