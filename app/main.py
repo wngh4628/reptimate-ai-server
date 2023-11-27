@@ -31,7 +31,10 @@ def create_app():
     app.add_middleware(middleware_class=BaseHTTPMiddleware, dispatch=access_control)
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=conf().ALLOW_SITE,
+        allow_origins=[
+            "http://localhost:3000",  # 또는 필요한 포트로 변경
+            conf().ALLOW_SITE,  # 다른 도메인이 있다면 추가
+        ],
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],
