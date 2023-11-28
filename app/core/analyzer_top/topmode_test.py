@@ -144,9 +144,9 @@ class TopMode:
             #꼬리 - 유무
             tail_score = 0
             if tail_exist == 1:
-                tail_score = 100
-            else:
                 tail_score = 50
+            else:
+                tail_score = 0
 
             top_result["tail_score"] = tail_score
             os.remove(image_path)
