@@ -115,7 +115,6 @@ class image_ai_service:
         session.refresh(value_analyzer)
         print("value_analyzer%%%%%%%%: ", value_analyzer)
         print("value_analyzer%%%%%%%%: ", value_analyzer.idx)
-        result.idx = value_analyzer.idx
         print("result: ", result)
         return result
 
