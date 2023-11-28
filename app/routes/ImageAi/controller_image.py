@@ -21,6 +21,7 @@ async def assessValue(data: ValueAnalyze = Depends(), files: List[UploadFile] = 
     await FileChecker.imgCheck(files)
     # 가치 판단 기능 실행
     result = await image_ai_service.assess_value(data, files)  # assess_value 메서드 호출
+    print("result1: ", result)
     # 결과 데이터 및 이미지 s3 저장
     result = await image_ai_service.analyzer_auto_save(result, files, session)
 

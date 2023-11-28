@@ -113,7 +113,9 @@ class image_ai_service:
         session.add(value_analyzer)
         session.commit()
         session.refresh(value_analyzer)
+        print("value_analyzer: ", value_analyzer)
         result.idx = value_analyzer.idx
+        print("result: ", result)
         return result
 
     async def analyzer_save(
