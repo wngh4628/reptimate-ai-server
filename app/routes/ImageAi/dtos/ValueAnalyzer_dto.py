@@ -2,6 +2,7 @@ from pydantic import BaseModel
 import json
 from typing import Optional
 class ValueAnalyzerCreate(BaseModel):
+    idx: int = 60
     user_idx: Optional[int] = None
     pet_name: str = '릴리'
     morph: str = '릴리 화이트'
