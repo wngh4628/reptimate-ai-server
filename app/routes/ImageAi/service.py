@@ -114,7 +114,7 @@ class image_ai_service:
         session.commit()
         session.refresh(value_analyzer)
         result.idx = value_analyzer.idx
-        return '저장 완료'
+        return result
 
     async def analyzer_save(
             self,
