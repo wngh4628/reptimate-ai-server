@@ -85,7 +85,7 @@ class ValueAnalyzerResult():
             left_score=ValueAnalyzerCreate.left_score,
             right_score=ValueAnalyzerCreate.right_score,
             total_score=ValueAnalyzerCreate.total_score,
-            left_info=ValueAnalyzerCreate.left_info_str,
-            right_info=ValueAnalyzerCreate.right_info_str,
+            left_info=ValueAnalyzerCreate.left_info,
+            right_info=ValueAnalyzerCreate.right_info,
         )
         return valueAnalyzerResult
