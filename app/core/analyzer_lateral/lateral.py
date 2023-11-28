@@ -114,6 +114,7 @@ class Lateral:
 
         os.remove(cropImgPath)
         os.remove(image_path)
+        print("Left score!!!!!!!: ", score)
         result = {
             "score": score,
             "SecondPercent": SecondPercent,
