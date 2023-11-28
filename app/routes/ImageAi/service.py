@@ -86,7 +86,7 @@ class image_ai_service:
             "tail_score") + topResult.get("dorsal_score")) / 5
 
         # 결과 저장
-        result = ValueAnalyzerCreate.updateFrom(None, None, 'auto_save', data.morph, data.gender, topResult.get("haed_score"),
+        result = ValueAnalyzerCreate.updateFrom(None, 'auto_save', data.morph, data.gender, topResult.get("haed_score"),
                                             topResult.get("dorsal_score"), topResult.get("tail_score"),
                                             leftResult.get('score'),rightResult.get('score'),
                                             total_score, leftResult, rightResult)
