@@ -110,6 +110,7 @@ class image_ai_service:
             elif idx == 2:
                 result.right_img = image_url
 
+        print("result%%%%%%%%: ", result)
         value_analyzer = ValueAnalyzerSchema(**result.dict())  # ValueAnalyzete 모델의 데이터를 ImageAi 모델로 변환rCrea
         session.add(value_analyzer)
         session.commit()
