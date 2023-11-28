@@ -23,9 +23,9 @@ async def assessValue(data: ValueAnalyze = Depends(), files: List[UploadFile] = 
     result = await image_ai_service.assess_value(data, files)  # assess_value 메서드 호출
     print("result1: ", result)
     # 결과 데이터 및 이미지 s3 저장
-    result = await image_ai_service.analyzer_auto_save(result, files, session)
+    result2 = await image_ai_service.analyzer_auto_save(result, files, session)
 
-    return result
+    return result2
 
 @router.post("/analyzer_save", summary="가치 판단 후 결과 저장하는 기능", description="*로그인 되어야 저장 가능합니다. 로그인 안됬으면 로그인 후에 해당 기능 실행해주세요!")
 async def analyzer_save(
