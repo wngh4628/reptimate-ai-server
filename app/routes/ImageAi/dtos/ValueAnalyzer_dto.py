@@ -54,7 +54,7 @@ class ValueAnalyze(BaseModel):
     morph: str = '릴리 화이트'
     gender: str = '암컷'
 
-class ValueAnalyzerResult():
+class ValueAnalyzerResult(BaseModel):
     idx: int
     user_idx: Optional[int] = None
     pet_name: str = '릴리'
