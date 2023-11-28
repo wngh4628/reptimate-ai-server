@@ -4,11 +4,6 @@ from sqlalchemy import (
     Column,
     Integer,
     String,
-    DateTime,
-    func,
-    Enum,
-    Boolean,
-    ForeignKey,
 )
 
 class ValueAnalyzerSchema(Base, BaseMixin):

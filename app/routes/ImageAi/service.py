@@ -97,7 +97,7 @@ class image_ai_service:
             result: ValueAnalyzerCreate,
             files: List[UploadFile] = File(...),
             session: Session = Depends(db.session)):
-        print("value_analyzer%%%%%%%%: ")
+        print("value_analyzer%%%%%%%%")
         # s3_uploader를 사용하여 이미지 업로드
         for idx, file in enumerate(files):
             uploaded_image = s3_uploader.upload_image(file, 'ImageAi')

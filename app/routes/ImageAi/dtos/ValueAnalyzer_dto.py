@@ -33,10 +33,7 @@ class ValueAnalyzerCreate(BaseModel):
             left_info: dict,
             right_info: dict,
     ):
-        left_info_str = json.dumps(left_info)
-        right_info_str = json.dumps(right_info)
-        print('left_info_str:!!!! ', left_info_str)
-        print('right_info_str:!!!! ', right_info_str)
+
         value_analyzer_create = ValueAnalyzerCreate(
             user_idx=user_idx,
             pet_name=pet_name,
@@ -48,8 +45,8 @@ class ValueAnalyzerCreate(BaseModel):
             left_score=left_score,
             right_score=right_score,
             total_score=total_score,
-            left_info=left_info_str,
-            right_info=right_info_str,
+            left_info=json.dumps(left_info),
+            right_info=json.dumps(right_info),
         )
         return value_analyzer_create
 
