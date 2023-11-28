@@ -4,3 +4,4 @@
 /app/core/chatting_bot_model/
 /core/chatting_bot_model/model_cooking_reptile.bin
 /core/chatting_bot_model/
+**/__pycache__/

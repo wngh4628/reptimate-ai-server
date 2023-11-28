@@ -99,13 +99,13 @@ async def access_control(request: Request, call_next):
             session.close()
             response = await call_next(request)
             return response
-        else:
-            if "authorization" in headers.keys():
-                token_info = await token_decode(access_token=headers.get("Authorization"))
-                request.state.user = UserToken(**token_info)
-            else:
-                if "Authorization" not in headers.keys():
-                    raise ex.NotAuthorized()
+        #else:
+            # if "authorization" in headers.keys():
+            #     token_info = await token_decode(access_token=headers.get("Authorization"))
+            #     request.state.user = UserToken(**token_info)
+            # else:
+            #     if "Authorization" not in headers.keys():
+            #         raise ex.NotAuthorized()
 
         response = await call_next(request)
         await api_logger(request=request, response=response)
