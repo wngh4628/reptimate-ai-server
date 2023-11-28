@@ -35,7 +35,8 @@ class ValueAnalyzerCreate(BaseModel):
     ):
         left_info_str = json.dumps(left_info)
         right_info_str = json.dumps(right_info)
-
+        print('left_info_str:!!!! ', left_info_str)
+        print('right_info_str:!!!! ', right_info_str)
         value_analyzer_create = ValueAnalyzerCreate(
             user_idx=user_idx,
             pet_name=pet_name,
