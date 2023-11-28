@@ -99,7 +99,7 @@ class Lateral:
 
         # 100점이 넘어가는 경우 100점 고정
         if score > 100:
-            score = score;
+            score = 100;
 
         if ThirdPercent > 60:
             score = score + 50
