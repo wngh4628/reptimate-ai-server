@@ -8,7 +8,7 @@ from core.analyzer_img_checker.img_checker import Img_checker
 from utils.S3 import s3_uploader
 from routes.ImageAi.schemas.ValueAnalyzer_schema import ValueAnalyzerSchema
 from routes.ImageAi.schemas.MorphList_schema import MorphListSchema
-from routes.ImageAi.dtos.ValueAnalyzer_dto import ValueAnalyzerCreate, ValueAnalyze
+from routes.ImageAi.dtos.ValueAnalyzer_dto import ValueAnalyzerCreate, ValueAnalyze, ValueAnalyzerResult
 from os import path
 import os
 import datetime
@@ -18,6 +18,7 @@ import shutil
 import json
 from utils.color_utils import find_similar_colors, rgb2lab
 from utils.linebreeding_utils import morph_re_selection, score_compare_selection, make_morph_explanation, sort_feature_order
+
 
 base_dir = path.dirname(path.dirname(path.dirname(path.abspath(__file__))))
 class image_ai_service:
@@ -85,7 +86,7 @@ class image_ai_service:
             "tail_score") + topResult.get("dorsal_score")) / 5
 
         # 결과 저장
-        result = ValueAnalyzerCreate.updateFrom(None, 'auto_save', data.morph, data.gender, topResult.get("haed_score"),
+        result = ValueAnalyzerCreate.updateFrom(None, None, 'auto_save', data.morph, data.gender, topResult.get("haed_score"),
                                             topResult.get("dorsal_score"), topResult.get("tail_score"),
                                             leftResult.get('score'),rightResult.get('score'),
                                             total_score, leftResult, rightResult)
@@ -113,6 +114,7 @@ class image_ai_service:
         session.add(value_analyzer)
         session.commit()
         session.refresh(value_analyzer)
+        result2 = ValueAnalyzerResult.updateFrom(6, value_analyzer);
         print("value_analyzer%%%%%%%%: ", value_analyzer)
         print("value_analyzer%%%%%%%%: ", value_analyzer.idx)
         print("result: ", result)

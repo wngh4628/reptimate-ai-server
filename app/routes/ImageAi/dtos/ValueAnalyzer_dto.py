@@ -2,7 +2,6 @@ from pydantic import BaseModel
 import json
 from typing import Optional
 class ValueAnalyzerCreate(BaseModel):
-    idx: int = 60
     user_idx: Optional[int] = None
     pet_name: str = '릴리'
     morph: str = '릴리 화이트'
@@ -56,3 +55,39 @@ class ValueAnalyzerCreate(BaseModel):
 class ValueAnalyze(BaseModel):
     morph: str = '릴리 화이트'
     gender: str = '암컷'
+
+class ValueAnalyzerResult():
+    idx: int
+    user_idx: Optional[int] = None
+    pet_name: str
+    morph: str
+    gender: str
+    head_score: int
+    dorsal_score: int
+    tail_score: int
+    left_score: int
+    right_score: int
+    total_score: int
+    left_info: str
+    right_info: str
+    top_img: str
+    left_img: str
+    right_img: str
+
+    def updateFrom(idx,ValueAnalyzerCreate):
+        valueAnalyzerResult = ValueAnalyzerResult(
+            idx=idx,
+            user_idx=ValueAnalyzerCreate.user_idx,
+            pet_name=ValueAnalyzerCreate.pet_name,
+            morph=ValueAnalyzerCreate.morph,
+            gender=ValueAnalyzerCreate.gender,
+            head_score=ValueAnalyzerCreate.head_score,
+            dorsal_score=ValueAnalyzerCreate.dorsal_score,
+            tail_score=ValueAnalyzerCreate.tail_score,
+            left_score=ValueAnalyzerCreate.left_score,
+            right_score=ValueAnalyzerCreate.right_score,
+            total_score=ValueAnalyzerCreate.total_score,
+            left_info=ValueAnalyzerCreate.left_info_str,
+            right_info=ValueAnalyzerCreate.right_info_str,
+        )
+        return valueAnalyzerResult
