@@ -97,7 +97,6 @@ class image_ai_service:
             result: ValueAnalyzerCreate,
             files: List[UploadFile] = File(...),
             session: Session = Depends(db.session)):
-        print("value_analyzer%%%%%%%%")
         # s3_uploader를 사용하여 이미지 업로드
         for idx, file in enumerate(files):
             uploaded_image = s3_uploader.upload_image(file, 'ImageAi')
@@ -110,16 +109,13 @@ class image_ai_service:
             elif idx == 2:
                 result.right_img = image_url
 
-        print("result%%%%%%%%: ", result)
         value_analyzer = ValueAnalyzerSchema(**result.dict())  # ValueAnalyzete 모델의 데이터를 ImageAi 모델로 변환rCrea
         session.add(value_analyzer)
         session.commit()
         session.refresh(value_analyzer)
         result2 = ValueAnalyzerResult.updateFrom(6, value_analyzer);
-        print("value_analyzer%%%%%%%%: ", value_analyzer)
-        print("value_analyzer%%%%%%%%: ", value_analyzer.idx)
-        print("result: ", result)
-        return result
+        result2.idx = value_analyzer.idx;
+        return result2
 
     async def analyzer_save(
             self,
