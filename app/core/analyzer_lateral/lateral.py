@@ -97,9 +97,6 @@ class Lateral:
         else:
             score = score + 50
 
-        # 100점이 넘어가는 경우 100점 고정
-        if score > 100:
-            score = 100;
 
         if ThirdPercent > 60:
             score = score + 50
@@ -111,6 +108,10 @@ class Lateral:
             score = score + 20
         elif ThirdPercent > 20:
             score = score + 10
+
+        # 100점이 넘어가는 경우 100점 고정
+        if score > 100:
+            score = 100;
 
         os.remove(cropImgPath)
         os.remove(image_path)
