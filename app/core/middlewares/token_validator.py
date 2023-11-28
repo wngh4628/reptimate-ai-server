@@ -46,7 +46,7 @@ async def access_control(request: Request, call_next):
         return response
 
     try:
-        if url.startswith("/image_ai") or url.startswith("/text_ai"):
+        if url.startswith("/image_ai/analyzer_save"):
             qs = str(request.query_params)
             qs_list = qs.split("&")
             session = next(db.session())

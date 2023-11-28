@@ -1,3 +1,5 @@
+import math
+
 import numpy as np
 from ultralytics import YOLO
 import cv2
@@ -75,8 +77,8 @@ class Lateral:
         Second = sum([(color_info[1] / pixel_count) * 100 for color_info in sorted_colors[1:]])
         Third = sum([(color_info[1] / pixel_count) * 100 for color_info in sorted_colors[2:]])
 
-        SecondPercent = Second / total_percentage * 100
-        ThirdPercent = Third / total_percentage * 100
+        SecondPercent = math.floor(Second / total_percentage * 100)
+        ThirdPercent = math.floor(Third / total_percentage * 100)
 
         score = 0
 
@@ -94,6 +96,10 @@ class Lateral:
             score = score + 60
         else:
             score = score + 50
+
+        # 100점이 넘어가는 경우 100점 고정
+        if score > 100:
+            score = score;
 
         if ThirdPercent > 60:
             score = score + 50

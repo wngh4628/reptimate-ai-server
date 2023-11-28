@@ -1,3 +1,5 @@
+import math
+
 import numpy as np
 from ultralytics import YOLO
 import cv2
@@ -117,7 +119,7 @@ class TopMode:
                 second_percent == 0
                 dorsal_score = 50
 
-            top_result["dorsal_second_percent"] = second_percent
+            top_result["dorsal_second_percent"] = math.floor(second_percent)
             top_result["dorsal_score"] = dorsal_score
 
             #머리 - (세로/가로)X100, 예외처리
@@ -138,7 +140,7 @@ class TopMode:
                 haed_score = 70
             elif head_percent < 65:
                 haed_score = 60
-            top_result["head_percent"] = head_percent
+            top_result["head_percent"] = math.floor(head_percent)
             top_result["haed_score"] = haed_score
 
             #꼬리 - 유무

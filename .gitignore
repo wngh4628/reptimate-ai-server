@@ -1,0 +1,6 @@
+/.env
+/app/.env
+/app/core/chatting_bot_model/model_cooking_reptile.bin
+/app/core/chatting_bot_model/
+/core/chatting_bot_model/model_cooking_reptile.bin
+/core/chatting_bot_model/
