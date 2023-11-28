@@ -83,19 +83,19 @@ class Lateral:
         score = 0
 
         if SecondPercent > 80:
-            score = score + 100
+            score = score + 65
         elif SecondPercent > 70:
-            score = score + 90
-        elif SecondPercent > 60:
-            score = score + 85
-        elif SecondPercent > 50:
-            score = score + 75
-        elif SecondPercent > 40:
-            score = score + 70
-        elif SecondPercent > 30:
             score = score + 60
-        else:
+        elif SecondPercent > 60:
+            score = score + 55
+        elif SecondPercent > 50:
             score = score + 50
+        elif SecondPercent > 40:
+            score = score + 45
+        elif SecondPercent > 30:
+            score = score + 40
+        else:
+            score = score + 30
 
 
         if ThirdPercent > 60:
@@ -115,7 +115,6 @@ class Lateral:
 
         os.remove(cropImgPath)
         os.remove(image_path)
-        print("Left score!!!!!!!: ", score)
         result = {
             "score": score,
             "SecondPercent": SecondPercent,
