@@ -113,8 +113,11 @@ class image_ai_service:
         session.add(value_analyzer)
         session.commit()
         session.refresh(value_analyzer)
-        result2 = ValueAnalyzerResult.updateFrom(6, value_analyzer);
-        result2.idx = value_analyzer.idx;
+        result2 = ValueAnalyzerResult.updateFrom(6, value_analyzer)
+        result2.idx = value_analyzer.idx
+        result2.top_img = result.top_img
+        result2.left_img = result.left_img
+        result2.right_img = result.right_img
         return result2
 
     async def analyzer_save(
